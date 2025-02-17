@@ -75,6 +75,25 @@
     text-align: center;
 }
 
+@media screen and (max-width: 768px) {
+    .st-container {
+        flex-direction: column;
+        /* ทำให้คอลัมน์เปลี่ยนเป็นแถว */
+        align-items: center;
+        /* จัดกึ่งกลาง */
+    }
+
+    .st-card,
+    .st-card1 {
+        width: 80%;
+        margin-bottom: 20px;
+    }
+
+    .st-button1 {
+        margin-top: 1px;
+    }
+}
+
 a {
     text-decoration: none !important;
 }
