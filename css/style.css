@@ -8,7 +8,16 @@
 .st-header {
     font-size: 32px;
     font-weight: bold;
-    color: #007bff;
+    color: #000000;
+    text-align: center;
+    margin-top: 50px;
+    width: 100%;
+}
+
+.st-KNN {
+    font-size: 28px;
+    font-weight: bold;
+    color: #000000;
     text-align: center;
     margin-top: 50px;
     width: 100%;

@@ -8,4 +8,6 @@ def load_css(file_name: str) -> None:
 css_path = pathlib.Path("css/style.css")
 load_css(css_path)
 
-st.title("Page 1")
+st.markdown('<h1 class="st-header">Machine Learning</h1>', unsafe_allow_html=True)
+
+st.subheader("การเตรียม Dataset")

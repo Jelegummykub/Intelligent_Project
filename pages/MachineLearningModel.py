@@ -13,7 +13,8 @@ css_path = pathlib.Path("css/style.css")
 load_css(css_path)
 
 
-st.title("Titanic Survival Prediction with KNN")
+st.markdown('<h1 class="st-KNN">Titanic Survival Prediction with KNN</h1>', unsafe_allow_html=True)
+
 
 df = pd.read_csv("data/Titanic.csv")
 
@@ -39,11 +40,22 @@ knn.fit(X, y)
 y_pred = knn.predict(X)
 
 accuracy = accuracy_score(y, y_pred)
-st.subheader(f"Accuracy: {accuracy:.2f}")
+st.subheader(f"Accuracy: :red[{accuracy:.2f}]")
+
+precision = precision_score(y, y_pred)
+recall = recall_score(y, y_pred)
+f1 = f1_score(y, y_pred)
+
+st.subheader(f"Precision: :green[{precision:.2f}]")
+st.subheader(f"Recall: :orange[{recall:.2f}]")
+st.subheader(f"F1-score: :blue[{f1:.2f}]")
+
 
 cm = confusion_matrix(y, y_pred)
-st.subheader("Confusion Matrix")
+st.subheader("Confusion Matrix : ")
 st.write(pd.DataFrame(cm, columns=['Predicted 0', 'Predicted 1'], index=['Actual 0', 'Actual 1']))
+
+st.markdown('<h1 class="st-KNN">Titanic Survival Prediction</h1>', unsafe_allow_html=True)
 
 fig, ax = plt.subplots()
 scatter = ax.scatter(interested['Age'], interested['Fare'], c=y_pred, cmap=plt.cm.viridis)
@@ -53,3 +65,10 @@ ax.set_title("Prediction Survived")
 plt.colorbar(scatter, label="Survived (0=No, 1=Yes)")
 
 st.pyplot(fig)
+
+
+
+st.markdown('<hr style="border:2px solid red;">', unsafe_allow_html=True)
+
+
+st.markdown('<h1 class="st-KNN">Titanic Survival Prediction with SVM</h1>', unsafe_allow_html=True)
