@@ -11,3 +11,4 @@ load_css(css_path)
 st.markdown('<h1 class="st-header">Machine Learning</h1>', unsafe_allow_html=True)
 
 st.subheader("การเตรียม Dataset")
+st.title("Page 2")
