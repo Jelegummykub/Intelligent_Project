@@ -2,7 +2,12 @@
 .stApp {
     background-color: #ffffff;
     width: 100%;
-    color: #000000
+    color: #000000;
+    p {
+        font-size: 16px;
+        color: #000000;
+    }
+
 }
 
 .st-header {
@@ -62,6 +67,16 @@
     margin-top: 50px;
 }
 
+.st-container1 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: auto;
+    width: 100%;
+    padding: 20px;
+    margin-top: 30px;
+}
+
 .st-card,
 .st-card1 {
     width: 48%;
@@ -105,4 +120,14 @@
 
 a {
     text-decoration: none !important;
+}
+
+.content-section {
+    margin-bottom: 20px;
+    padding: 10px;
+}
+
+.st-element11 {
+    font-size: 16px;
+    color: #000000;
 }
