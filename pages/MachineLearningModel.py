@@ -68,9 +68,7 @@ plt.colorbar(scatter, label="Survived (0=No, 1=Yes)")
 st.pyplot(fig)
 
 
-
-st.markdown('<hr style="border:2px solid red;">', unsafe_allow_html=True)
-
+st.subheader("")
 
 st.markdown('<h1 class="st-KNN">Titanic Survival Prediction with SVM</h1>', unsafe_allow_html=True)
 
