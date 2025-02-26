@@ -1,12 +1,14 @@
 import streamlit as st
 import pandas as pd
 import pathlib
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import LabelEncoder
-from sklearn.neural_network import MLPClassifier
-from sklearn.metrics import classification_report
-import matplotlib.pyplot as plt
-import seaborn as sns
+import numpy as np
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Flatten, Dense, Dropout
+from tensorflow.keras.preprocessing.image import img_to_array
+from PIL import Image
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.applications import VGG16
 
 def load_css(file_name: str) -> None:
     with open(file_name) as f:
@@ -15,57 +17,79 @@ def load_css(file_name: str) -> None:
 css_path = pathlib.Path("css/style.css")
 load_css(css_path)
 
-st.markdown('<h1 class="st-KNN">Pokemon Attack Prediction with MLP</h1>', unsafe_allow_html=True)
+st.markdown('<h1 class="st-KNN">Pokemon Type & Attack Prediction with CNN</h1>', unsafe_allow_html=True)
 
-
-df = pd.read_csv("data/pokemon.csv")
-
-st.subheader("")
-
-st.subheader("ตัวอย่างข้อมูล")
-
+df = pd.read_csv("data/Pokemoncopy.csv")
 st.write(df.head())
 
-label_encoder = LabelEncoder()
+def preprocess_image(image):
+    """ฟังก์ชันพรีโปรเซสภาพ (resize และ normalize)"""
+    image = image.convert("RGB")
+    image = image.resize((224, 224))
+    image = img_to_array(image) / 255.0
+    return np.expand_dims(image, axis=0)
 
-df['gender'] = label_encoder.fit_transform(df['gender'].astype(str))
-df['category'] = label_encoder.fit_transform(df['category'].astype(str))
-df['abilities'] = label_encoder.fit_transform(df['abilities'].astype(str))
-df['weakness'] = label_encoder.fit_transform(df['weakness'].astype(str))
+def build_cnn_model():
+    """ฟังก์ชันสร้างโมเดล CNN ด้วย VGG16 เป็น Transfer Learning"""
+    base_model = VGG16(weights="imagenet", include_top=False, input_shape=(224, 224, 3))
+    base_model.trainable = False
 
-features = df[['gender', 'category', 'abilities', 'weakness', 'height', 'weight', 'attack', 'defense', 'hp', 'special_attack', 'special_defense', 'speed']]
+    model = Sequential([
+        base_model,
+        Flatten(),
+        Dense(128, activation='relu'),
+        Dropout(0.5),
+        Dense(len(df["Type1"].unique()), activation='softmax')  # ใช้ softmax สำหรับหลายประเภท
+    ])
+    
+    model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+    return model
 
-target = df['attack']
+def train_model():
+    model = build_cnn_model()
 
-X_train, X_test, y_train, y_test = train_test_split(features, target, test_size=0.2, random_state=42)
+    datagen = ImageDataGenerator(
+        rescale=1./255,
+        rotation_range=30,
+        width_shift_range=0.2,
+        height_shift_range=0.2,
+        horizontal_flip=True
+    )
 
-mlp_model = MLPClassifier(hidden_layer_sizes=(64, 32), max_iter=1000, random_state=42)
-mlp_model.fit(X_train, y_train)
+    train_data = datagen.flow_from_directory(
+        'data/pokemon_images',
+        target_size=(224, 224),
+        batch_size=32,
+        class_mode='categorical'
+    )
 
-y_pred = mlp_model.predict(X_test)
+    model.fit(train_data, epochs=20, steps_per_epoch=200)
 
-st.markdown("### ผลการประเมินโมเดล:")
+    model.save('pokemon_cnn.h5')
 
-report = classification_report(y_test, y_pred, output_dict=True)
+try:
+    model = tf.keras.models.load_model("pokemon_cnn.h5")
+except:
+    model = build_cnn_model()
 
-report_df = pd.DataFrame(report).transpose()
+uploaded_file = st.file_uploader("อัปโหลดภาพโปเกมอน", type=["jpg", "png", "jpeg"])
+if uploaded_file is not None:
+    image = Image.open(uploaded_file)
+    st.image(image, caption="รูปโปเกมอน", use_container_width=True)
 
-st.dataframe(report_df)
+    processed_image = preprocess_image(image)
 
-plt.figure(figsize=(10, 6))
+    prediction = model.predict(processed_image)
+    predicted_label = np.argmax(prediction)
+    prediction_confidence = np.max(prediction)
 
-st.subheader("")
+    pokemon_info = df.iloc[predicted_label]
+    predicted_name = pokemon_info["Name"]
+    predicted_type = pokemon_info["Type1"]
+    predicted_attack = pokemon_info["Attack"]
 
-
-st.markdown('<h1 class="st-KNN">Pokemon Attack Prediction</h1>', unsafe_allow_html=True)
-
-
-sns.scatterplot(x=y_test, y=y_pred, alpha=0.6, color='blue')
-
-plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], color='red', linestyle='--', label='การทำนายที่สมบูรณ์แบบ')
-
-plt.title("Predicted vs Actual Attack Values")
-plt.xlabel("Actual Attack")
-plt.ylabel("Predicted Attack")
-
-st.pyplot(plt)
+    st.markdown(f"### ผลลัพธ์การทำนาย:")
+    st.write(f"**ชื่อ:** {predicted_name}")
+    st.write(f"**ประเภท:** {predicted_type}")
+    st.write(f"**พลังโจมตี:** {predicted_attack}")
+    st.write(f"**ความมั่นใจในการทำนาย:** {prediction_confidence*100:.2f} %")
