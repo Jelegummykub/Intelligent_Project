@@ -26,7 +26,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# st.image("public/images/pokemon.jpg")
+st.image("public/images/pokemon.jpg")
 
 st.subheader("ทฤษฎีของ Multi-layer Perceptron (MLP)")
 
