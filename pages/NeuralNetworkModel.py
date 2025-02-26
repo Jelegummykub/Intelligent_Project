@@ -1,16 +1,15 @@
-import streamlit as st
 import pandas as pd
 import pathlib
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Flatten, Dense, Dropout, Conv2D, MaxPooling2D, BatchNormalization, GlobalAveragePooling2D
+from tensorflow.keras.layers import Flatten, Dense, Dropout, Conv2D, MaxPooling2D, BatchNormalization
 from tensorflow.keras.preprocessing.image import img_to_array
 from PIL import Image
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
-from tensorflow.keras.applications import VGG16
-import os
-from sklearn.preprocessing import LabelEncoder
+from tensorflow.keras.callbacks import ReduceLROnPlateau
+import streamlit as st
+import pathlib
 
 def load_css(file_name: str) -> None:
     with open(file_name) as f:
@@ -19,11 +18,20 @@ def load_css(file_name: str) -> None:
 css_path = pathlib.Path("css/style.css")
 load_css(css_path)
 
-st.markdown('<h1 class="st-KNN">Pokemon Type & Attack Prediction with CNN</h1>', unsafe_allow_html=True)
-
 df = pd.read_csv("data/Pokemoncopy.csv")
-st.subheader("ตัวอย่างข้อมูล")
-st.write(df.head())
+
+pokemon_names = ["Charmander", "Pikachu"]
+filtered_df = df[df["Name"].isin(pokemon_names)]
+
+filtered_df = filtered_df[["Name", "Type1", "Attack", "HP"]]
+
+st.markdown('<h1 class="st-KNN">Pokemon Prediction with CNN</h1>', unsafe_allow_html=True)
+
+st.subheader("ข้อมูล Pokémon ทั้งหมด")
+st.dataframe(df) 
+
+st.subheader("ข้อมูล Pokémon (Charmander และ Pikachu)")
+st.write(filtered_df)
 
 def preprocess_image(image):
     image = image.convert("RGB")
@@ -31,56 +39,59 @@ def preprocess_image(image):
     image = img_to_array(image) / 255.0
     return np.expand_dims(image, axis=0)
 
-def build_cnn_model_vgg16():
-    base_model = VGG16(weights='imagenet', include_top=False, input_shape=(224, 224, 3))
-    base_model.trainable = False
-
+def build_cnn_model_simplified():
     model = Sequential([
-        base_model,
-        GlobalAveragePooling2D(),
+        Conv2D(32, (3, 3), activation='relu', input_shape=(224, 224, 3)),
+        BatchNormalization(),
+        MaxPooling2D(2, 2),
+        
+        Conv2D(64, (3, 3), activation='relu'),
+        BatchNormalization(),
+        MaxPooling2D(2, 2),
+        
+        Flatten(),
+        
         Dense(128, activation='relu'),
         Dropout(0.5),
-        Dense(8 , activation='softmax')
+        Dense(2, activation='softmax')
     ])
     
     model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
     return model
 
-def train_model():
-    model = build_cnn_model_vgg16()
-    print("⚙️ เริ่มการฝึกโมเดล...")
+datagen = ImageDataGenerator(
+    rescale=1./255,
+    rotation_range=40,
+    width_shift_range=0.2,
+    height_shift_range=0.2, 
+    shear_range=0.2,
+    zoom_range=0.2,
+    horizontal_flip=True,
+    fill_mode='nearest' 
+)
 
-    datagen = ImageDataGenerator(
-        rescale=1./255,
-        rotation_range=30,
-        width_shift_range=0.2,
-        height_shift_range=0.2,
-        horizontal_flip=True,
-        zoom_range=0.2,
-        shear_range=0.2
-    )
+def train_model():
+    model = build_cnn_model_simplified()
 
     base_path = "train/pokemon_images"
-    if not os.path.exists(base_path):
-        print(f"⚠️ โฟลเดอร์ `{base_path}` ไม่มีอยู่! โปรดตรวจสอบไฟล์ภาพ")
-        return
-
     train_data = datagen.flow_from_directory(
         base_path,
         target_size=(224, 224),
         batch_size=32,
-        class_mode='categorical'
+        class_mode='categorical',
+        shuffle=True 
     )
 
-    if train_data.samples == 0:
-        print("⚠️ ไม่มีภาพในโฟลเดอร์ `train/pokemon_images` เทรนไม่ได้!")
-        return
+    reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.1, patience=10, min_lr=1e-6)
 
-    steps_per_epoch = train_data.samples // train_data.batch_size
-    model.fit(train_data, epochs=50, batch_size=32, steps_per_epoch=steps_per_epoch)
+    model.fit(
+        train_data,
+        epochs=100,
+        validation_data=train_data,
+        callbacks=[reduce_lr]
+    )
 
     model.save("model/pokemon_cnn.h5")
- 
 
 model = tf.keras.models.load_model("model/pokemon_cnn.h5")
 
@@ -95,13 +106,17 @@ if uploaded_file is not None:
     predicted_label = np.argmax(prediction)
     prediction_confidence = np.max(prediction)
 
-    pokemon_info = df.iloc[predicted_label]
-    predicted_name = pokemon_info["Name"]
-    predicted_type = pokemon_info["Type1"]
-    predicted_attack = pokemon_info["Attack"]
+    predicted_name = "Charmander" if predicted_label == 0 else "Pikachu"
+    predicted_type = filtered_df[filtered_df["Name"] == predicted_name]["Type1"].values[0]
+    predicted_attack = filtered_df[filtered_df["Name"] == predicted_name]["Attack"].values[0]
+    predicted_hp = filtered_df[filtered_df["Name"] == predicted_name]["HP"].values[0]
 
     st.markdown(f"### ผลลัพธ์การทำนาย:")
     st.write(f"**ชื่อ:** {predicted_name}")
     st.write(f"**ประเภท:** {predicted_type}")
     st.write(f"**พลังโจมตี:** {predicted_attack}")
+    st.write(f"**เลือด:** {predicted_hp}")
     st.write(f"**ความมั่นใจในการทำนาย:** {prediction_confidence*100:.2f} %")
+    
+    st.write(f"**ความมั่นใจในการทำนาย Pikachu:** {prediction[0][1] * 100:.2f}%")
+    st.write(f"**ความมั่นใจในการทำนาย Charmander:** {prediction[0][0] * 100:.2f}%")
