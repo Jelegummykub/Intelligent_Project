@@ -1,0 +1,142 @@
+
+.stApp {
+    background-color: #ffffff;
+    width: 100%;
+    color: #000000;
+    p {
+        font-size: 16px;
+        color: #000000;
+    }
+    h4 {
+        font-size: 30px;
+        color: #000000;
+    }
+
+    h5 {
+        font-size: 20px;
+        color: #000000;
+    }
+
+}
+
+.st-header {
+    font-size: 32px;
+    font-weight: bold;
+    color: #000000;
+    text-align: center;
+    margin-top: 50px;
+    width: 100%;
+}
+
+.st-KNN {
+    font-size: 28px;
+    font-weight: bold;
+    color: #000000;
+    text-align: center;
+    margin-top: 50px;
+    width: 100%;
+}
+
+.st-button {
+    background-color: rgb(0, 0, 0);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    display: block;
+    margin-left: auto;
+}
+
+.st-button:hover {
+    background-color: rgb(30, 30, 30);
+}
+
+.st-button1 {
+    background-color: rgb(0, 0, 0);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    display: block;
+    margin-left: auto;
+    margin-top: 45px;
+}
+
+.st-button1:hover {
+    background-color: rgb(30, 30, 30);
+}
+
+.st-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: auto;
+    width: 100%;
+    padding: 20px;
+    margin-top: 50px;
+}
+
+.st-container1 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: auto;
+    width: 100%;
+    padding: 20px;
+    margin-top: 30px;
+}
+
+.st-card,
+.st-card1 {
+    width: 48%;
+    padding: 20px;
+    border: 2px solid #000000;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    height: 200px;
+    transition: all 0.3s ease-in-out;
+}
+
+.st-card:hover,
+.st-card1:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    border-color: #000000;
+    transform: translateY(-5px);
+}
+
+.st-element1 h2 {
+    text-align: center;
+}
+
+@media screen and (max-width: 768px) {
+    .st-container {
+        flex-direction: column;
+        /* ทำให้คอลัมน์เปลี่ยนเป็นแถว */
+        align-items: center;
+        /* จัดกึ่งกลาง */
+    }
+
+    .st-card,
+    .st-card1 {
+        width: 80%;
+        margin-bottom: 20px;
+    }
+
+    .st-button1 {
+        margin-top: 1px;
+    }
+}
+
+a {
+    text-decoration: none !important;
+}
+
+.content-section {
+    margin-bottom: 20px;
+    padding: 10px;
+}
+
+.st-element11 {
+    font-size: 16px;
+    color: #000000;
+}
