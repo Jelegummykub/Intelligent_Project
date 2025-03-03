@@ -10,6 +10,9 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.callbacks import ReduceLROnPlateau
 import streamlit as st
 import pathlib
+import random
+import base64
+from io import BytesIO
 
 def load_css(file_name: str) -> None:
     with open(file_name) as f:
@@ -95,6 +98,46 @@ def train_model():
 
 model = tf.keras.models.load_model("model/pokemon_cnn.h5")
 
+st.subheader("")
+st.subheader("สามารถดาวน์โหลดภาพตัวอย่างของ Charmander และ Pikachu เพื่อทดสอบโมเดลได้")
+
+
+def get_pokemon_image(pokemon_name , size = (300,300)):
+        folder_path = f"train/pokemon_images/{pokemon_name}/"
+        image_files = list(pathlib.Path(folder_path).glob("*.jpg"))
+        if image_files:
+            return random.choice(image_files) 
+        return None
+    
+charmander_image = get_pokemon_image("Charmander")
+if charmander_image:
+        image = Image.open(charmander_image)
+        image = image.resize((300, 300))
+        st.image(image, caption="Charmander ตัวอย่าง", use_container_width=True)
+        img_buffer = BytesIO()
+        image.save(img_buffer, format="JPEG")
+        img_base64 = base64.b64encode(img_buffer.getvalue()).decode()
+
+        href = f'<a href="data:file/jpg;base64,{img_base64}" download="Charmander_sample.jpg">📥 ดาวน์โหลด Charmander</a>'
+        st.markdown(href, unsafe_allow_html=True)
+
+st.subheader("")
+pikachu_image_path = get_pokemon_image("Pikachu")
+if pikachu_image_path:
+        image = Image.open(pikachu_image_path)
+        image = image.resize((300, 300))
+        st.image(image, caption="Pikachu ตัวอย่าง", use_container_width=True)
+
+        img_buffer = BytesIO()
+        image.save(img_buffer, format="JPEG")
+        img_base64 = base64.b64encode(img_buffer.getvalue()).decode()
+
+        href = f'<a href="data:file/jpg;base64,{img_base64}" download="Pikachu_sample.jpg">📥 ดาวน์โหลด Pikachu</a>'
+        st.markdown(href, unsafe_allow_html=True)
+            
+
+
+
 uploaded_file = st.file_uploader("อัปโหลดภาพโปเกมอน", type=["jpg", "png", "jpeg"])
 if uploaded_file is not None:
     image = Image.open(uploaded_file)
@@ -120,3 +163,6 @@ if uploaded_file is not None:
     
     st.write(f"**ความมั่นใจในการทำนาย Pikachu:** {prediction[0][1] * 100:.2f}%")
     st.write(f"**ความมั่นใจในการทำนาย Charmander:** {prediction[0][0] * 100:.2f}%")
+    
+    
+    
