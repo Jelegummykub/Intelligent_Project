@@ -44,13 +44,22 @@ st.markdown(
 
 st.subheader("ขั้นตอนในการพัฒนาโมเดล K-Nearest Neighbors (KNN)")
 
+st.subheader("")
+
+st.markdown(
+    """
+        <h5 class="st-element1">ขั้นตอนนี้ผมได้ทำการอ่านข้อมูลจากไฟล์ CSV และสุ่มข้อมูลจำนวน 100 แถวจาก DataFrame พร้อมทั้งแสดงตัวอย่างข้อมูลที่เราสนใจ
+    </h5>
+    """,
+    unsafe_allow_html=True
+)
+
 st.markdown(
     """
     ```python
-    # ขั้นตอนนี้ผมได้ทำการอ่านข้อมูลจากไฟล์ CSV และสุ่มข้อมูลจำนวน 30 แถวจาก DataFrame พร้อมทั้งแสดงตัวอย่างข้อมูลที่เราสนใจ
     df = pd.read_csv("data/Titanic.csv")
 
-    df_sample = df.sample(n=30, random_state=42)
+    df_sample = df.sample(n=100, random_state=42)
 
     interested = pd.DataFrame({
         'Pclass': df_sample['Pclass'],
@@ -64,11 +73,25 @@ st.markdown(
     st.write(interested.head())
     
     ```
-    
+    """,
+    unsafe_allow_html=True
+)
+
+st.subheader("")
+
+
+st.markdown(
+    """
+        <h5 class="st-element1">จากนั้นทำการแยกข้อมูลออกเป็น features (X) และ label (y) และสร้างโมเดล K-Nearest Neighbors (KNN) โดยเลือก k = 3
+    </h5>
+    """,
+    unsafe_allow_html=True
+)
+
+st.markdown(
+    """
     ```python
-
-    # จากนั้นทำการแยกข้อมูลออกเป็น features (X) และ label (y) และสร้างโมเดล K-Nearest Neighbors (KNN) โดยเลือก k = 3
-
+    
     X = interested.drop(columns=['Survived'])
     y = interested['Survived']
 
@@ -78,10 +101,23 @@ st.markdown(
     y_pred = knn.predict(X)
     
     ```
-    
+    """,
+    unsafe_allow_html=True
+)
+
+st.subheader("")
+
+st.markdown(
+    """
+        <h5 class="st-element1">ขั้นตอนนี้ผมได้คำนวณความแม่นยำ Accuracy, Precision, Recall, F1-score, Confusion Matrix และแสดงผลลัพธ์ที่ได้
+    </h5>
+    """,
+    unsafe_allow_html=True
+)
+
+st.markdown(
+    """
     ```python
-    
-    # ขั้นตอนนี้ผมได้คำนวณความแม่นยำ Accuracy, Precision, Recall, F1-score, Confusion Matrix และแสดงผลลัพธ์ที่ได้
     accuracy = accuracy_score(y, y_pred)
     st.subheader(f"Accuracy: :red[{accuracy:.2f}]")
 
@@ -95,12 +131,25 @@ st.markdown(
 
     cm = confusion_matrix(y, y_pred)
     st.subheader("Confusion Matrix : ")
-    st.write(pd.DataFrame(cm, columns=['Predicted 0', 'Predicted 1'], index=['Actual 0', 'Actual 1']))  # แสดง Confusion Matrix
-
-    ```
+    st.write(pd.DataFrame(cm, columns=['Predicted 0', 'Predicted 1'], index=['Actual 0', 'Actual 1']))
     
+    ```
+    """,
+    unsafe_allow_html=True
+)
+
+st.subheader("")
+
+st.markdown(
+    """
+        <h5 class="st-element1">ทำการแสดงกราฟ Scatter Plot เพื่อแสดงผลการทำนาย
+    """,
+    unsafe_allow_html=True
+)
+
+st.markdown(
+    """
     ```python
-    # ทำการแสดงกราฟ Scatter Plot เพื่อแสดงผลการทำนาย
     fig, ax = plt.subplots()
     scatter = ax.scatter(interested['Age'], interested['Fare'], c=y_pred, cmap=plt.cm.viridis)
     ax.set_xlabel("Age")
@@ -114,6 +163,7 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
 
 st.subheader("")
 
@@ -134,13 +184,25 @@ st.markdown(
 
 st.subheader("ขั้นตอนในการพัฒนาโมเดล Support Vector Machine (SVM)")
 
+
+st.subheader("")
+
+
+st.markdown(
+    """
+        <h5 class="st-element1">ขั้นตอนนี้ผมได้ทำการอ่านข้อมูลจากไฟล์ CSV และสุ่มข้อมูลจำนวน 100 แถวจาก DataFrame พร้อมทั้งแสดงตัวอย่างข้อมูลที่เราสนใจ
+    </h5>
+    """,
+    unsafe_allow_html=True
+)
+
 st.markdown(
     """
     ```python
-    # ขั้นตอนนี้ผมได้ทำการอ่านข้อมูลจากไฟล์ CSV และสุ่มข้อมูลจำนวน 30 แถวจาก DataFrame พร้อมทั้งแสดงตัวอย่างข้อมูลที่เราสนใจ
+    
     df = pd.read_csv("data/Titanic.csv")
 
-    df_sample = df.sample(n=30, random_state=42)
+    df_sample = df.sample(n=100, random_state=42)
 
     interested = pd.DataFrame({
         'Pclass': df_sample['Pclass'],
@@ -152,24 +214,53 @@ st.markdown(
 
     st.subheader("ตัวอย่างข้อมูล")
     st.write(interested.head())
-    ```
     
-    ```python
+    ```
+    """,
+    unsafe_allow_html=True
+)
 
-    # ขั้นตอนนี้คือผมได้แยกคุณสมบัติ (features) และเป้าหมาย (target) และสร้างโมเดล Support Vector Machine (SVM) โดยใช้ kernel แบบ linear
+st.subheader("")
+
+st.markdown(
+    """
+        <h5 class="st-element1">ขั้นตอนนี้คือผมได้แยกคุณสมบัติ (features) และเป้าหมาย (target) และสร้างโมเดล Support Vector Machine (SVM) โดยใช้ kernel แบบ rbf และได้แบ่งข้อมูลเป็นชุด train โดยใช้ test_size=0.2
+    </h5>
+    """,
+    unsafe_allow_html=True
+)
+
+st.markdown(
+    """
+    ```python
+    
     X = interested.drop(columns=['Survived'])
     y = interested['Survived']
-
-    svm = SVC(kernel='linear')
-    svm.fit(X, y)
-
-    y_pred = svm.predict(X)
     
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, stratify=y, random_state=42)
+        model = SVC(kernel='rbf', gamma='scale')
+        model.fit(X_train, y_train)
+        y_pred = model.predict(X_test)
     ```
-    
-    ```python
+    """,
+    unsafe_allow_html=True
+)
 
-    # คำนวณค่า Accuracy, Precision, Recall, F1-score, Confusion Matrix และแสดงผลลัพธ์ที่ได้
+st.subheader("")
+
+
+st.markdown(
+    """
+        <h5 class="st-element1">คำนวณค่า Accuracy, Precision, Recall, F1-score, Confusion Matrix และแสดงผลลัพธ์ที่ได้
+    </h5>
+    """,
+    unsafe_allow_html=True
+)
+
+st.markdown(
+    """
+    ```python
+    
     accuracy = accuracy_score(y, y_pred)
     st.subheader(f"Accuracy: :red[{accuracy:.2f}]")
 
@@ -184,12 +275,27 @@ st.markdown(
     cm = confusion_matrix(y, y_pred)
     st.subheader("Confusion Matrix : ")
     st.write(pd.DataFrame(cm, columns=['Predicted 0', 'Predicted 1'], index=['Actual 0', 'Actual 1']))
-
-    ```
     
-    ```python
-    # ทำการแสดงกราฟ Scatter Plot เพื่อแสดงผลการทำนาย
+    ```
+    """,
+    unsafe_allow_html=True
+)
 
+st.subheader("")
+
+
+st.markdown(
+    """
+        <h5 class="st-element1">ทำการแสดงกราฟ Scatter Plot เพื่อแสดงผลการทำนาย
+    </h5>
+    """,
+    unsafe_allow_html=True
+)
+
+st.markdown(
+    """
+    ```python
+    
     fig, ax = plt.subplots()
     scatter = ax.scatter(interested['Age'], interested['Fare'], c=y_pred, cmap=plt.cm.viridis)
     ax.set_xlabel("Age")
@@ -198,6 +304,7 @@ st.markdown(
     plt.colorbar(scatter, label="Survived (0=No, 1=Yes)")
 
     st.pyplot(fig)
+    
     ```
     """,
     unsafe_allow_html=True
